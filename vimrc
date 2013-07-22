@@ -2,50 +2,98 @@
 """""""""""""""""""""" Vim configurations file """""""""""""""""""""""""""""""""
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" now compatible vi must be first line
+" Don't use vi compatibility
 set nocompatible
 
-" Устанавливаем расстояние в 80 столбцов для более удобного формирования
-" синтаксиса при программировании.
+" Enable file type support
+filetype on
+filetype plugin on
+filetype indent on
 
-fu! ForProgramming()
-   if exists('+colorcolumn')
-     set colorcolumn=80
-   else
-     au BufWinEnter * let w:m2=matchadd('ErrorMsg', '\%>80v.\+', -1)
-   endif
-endfu
+set wildmode=list:longest,full
 
+" set UTF-8 encoding
+set enc=utf-8
+set fenc=utf-8
+set termencoding=utf-8
+
+" No annoying sound on errors
+set noerrorbells
 set novisualbell
 set t_vb=
+set tm=500
 
+
+" always show cursor position
+set ruler
+
+
+" nice copypaste
+vmap <C-Insert> "+y
+vmap <S-Insert> "+p
+nmap <S-Insert> "+p
+imap <S-Insert> <Esc>"+pi
+
+" enabel sintax
+syntax on
+
+" smart tab's
+set softtabstop=2 tabstop=2 shiftwidth=2 expandtab
+set smarttab
+
+" do not wrap lines
+set nowrap
+
+set mouse=a
+set mousemodel=popup
+
+" Enable automatic indenting
+set autoindent
+
+" Turn on the 'smart' automatic indenting
+set smartindent
+" It only works when the gui
 
 if has("gui_running")
 
-   call ForProgramming()
+  " show numbers
+  set nu
 
-   " По умолчанию при тёмный фон
-   set background=dark
+  " Default with and height vim windows
+  set lines=41
+  set columns=169
 
-   " Размеры окна по умолчанию при открытии vim
-   set lines=90
-   set columns=150
+  " color cheme
+  colorscheme herald
 
-   " Цветовая схема
-      colorscheme herald
+  " set dark background
+  set background=dark
 
-   " Отображаем нумерацию строк.
-   set nu
+  " select gorizontal cursor line
+  set cursorline
 
-   " Всегда отображаем позицию положения курсора.
-   set ruler
+  " select vertical cursor line
+  set cursorcolumn
 
-   " Выделяем сначала горизонтальную линию положения курсора потом
-   " вертикальную
-   set cursorline
-   set cursorcolumn
+  " Включаем подсветку при поиске.
+  set hlsearch
 
-" remove startup text
+  " Инкриментный поиск, при поиске сразу выделяем найденое не ждём нажатия Enter для поиска
+  set incsearch
+
+  " Убираем подсветку после поиска по нажатию на ESC
+  nnoremap <esc> :noh<return><esc>
+
+  if exists('+colorcolumn')
+    set colorcolumn=120
+    highlight OverLength ctermbg=red ctermfg=white guibg=#592929
+    match OverLength /\%120v.\+/
+  else
+    au BufWinEnter * let w:m2=matchadd('ErrorMsg', '\%>120v.\+', -1)
+  endif
+
+
+  " remove startup text
    set shortmess+=tToOI
    set guioptions+=e " включаем none-gui табы
    set guioptions-=r " отключаем правый scrollbar
@@ -54,56 +102,26 @@ if has("gui_running")
    set guioptions-=l " отключаем левый scrollbar
    set guioptions-=L " отключаем левый scrollbar при вертикальном разделении окна
    set guioptions-=T " отключаем панель инструментов
-"   set guioptions-=m " отключаем меню
+   set guioptions-=m " отключаем меню
 
-   " Удобное копирование клавишами в буфер иков.
-   " <C-Insert> Копировать в буфер обмена иксов Ctrl-Insert
-   vmap <C-Insert> "+y
-   " <Shift-Insert> Вставить из буфера обмена иксов Shift-Insert
-   vmap <S-Insert> "+p
-   nmap <S-Insert> "+p
-   imap <S-Insert> <Esc>"+pi
+   function! ToggleGUICruft()
+      if &guioptions=='i'
+        exec('set guioptions=imTrL')
+      else
+        exec('set guioptions=i')
+    endif
+  endfunction
+
+  map <F11> <Esc>:call ToggleGUICruft()<cr>
+
+" by default, hide gui menus
+set guioptions=i
+
+  set t_Co=256
+  set guitablabel=%M\ %t
 
 endif
 
-
-" Включаем подсветку синтаксиса.
-syntax on
-
-" Настраеваем отступы табуляции, замена табуляции пробелами и умные отступы.
-set softtabstop=2 tabstop=2 shiftwidth=2 expandtab
-set smarttab
-
-
-" Не переносить строки в конце экрана редактора
-set nowrap
-
-" for python
-au FileType python setlocal tabstop=8 expandtab shiftwidth=4 softtabstop=4
-
-" Автомитически меняем рабочую  дирикторию
-set autochdir
-
-" Enable file type support
-filetype on
-filetype plugin on
-filetype indent on
-
-" list all the available options at once, and then bust
-set wildmode=list:longest,full
-
-" Turn off mouse support when running in terminal
-"set mouse=a
-set mousemodel=popup
-
-" Options Auto additions.
-set completeopt=longest,menuone
-
-" Enable automatic indenting
-set autoindent
-
-" Turn on the 'smart' automatic indenting
-set smartindent
 
 " Turn on the display the currently executing command in the lower right corner
 " of the screen
@@ -111,8 +129,9 @@ set showcmd
 
 " The size of the history to undo edits
 set undolevels=10000
+
 "centrolize cursor
-set scrolloff=10
+set scrolloff=5
 
 " history cmd line
 set history=50
@@ -122,9 +141,9 @@ set history=50
 
 " Show the status bar is always
 set laststatus=2
-set statusline=%f%m%r%h%w\ %y\ \ enc:%{&enc}\ format:%{&ff}\ file:%{&fenc}%=(\ ch:%3b\ hex:%2B\ )\ col:%2c\ line:%2l/%L\ [%2p%%]
+set statusline=%f%m%r%h%w\ %y\ \ enc:%{&enc}\ format:%{&ff}\ file:%{&fenc}\ %{fugitive#statusline()}%=\ (\ ch:%3b\ hex:%2B\ )\ col:%2c\ line:%2l/%L\ [%2p%%]
 
-set list listchars=tab:\ \ ,eol:¬
+" set list listchars=tab:\ \ ,eol:¬
 
 " sudo writeble
 cmap w!! w !sudo tee % >/dev/null
@@ -154,243 +173,35 @@ set smartcase
 autocmd BufRead,BufWrite * if ! &bin | silent! %s/\s\+$//ge | endif
 
 " Autoclose
-	inoremap " ""<LEFT>
-	inoremap ' ''<LEFT>
-	inoremap [ []<LEFT>
-	inoremap ( ()<LEFT>
-	inoremap { {}<LEFT>
+inoremap " ""<LEFT>
+inoremap ' ''<LEFT>
+inoremap [ []<LEFT>
+inoremap ( ()<LEFT>
+inoremap { {}<LEFT>
 
-if has("gui_running")
-   set wildmenu
-   set wcm=<Tab>
-   menu Encoding.koi8-r :set enc=koi8-r<CR> :e ++enc=koi8-r ++ff=unix<CR>
-   menu Encoding.windows-1251 :set enc=cp1251<CR> :e ++enc=cp1251 ++ff=dos<CR>
-   menu Encoding.cp866 :set enc=8bit-cp866<CR> :e ++enc=cp866 ++ff=dos<CR>
-   menu Encoding.utf-8 :set enc=utf8<CR> :e ++enc=utf8 <CR>
-   menu Encoding.koi8-u :set enc=koi8-u<CR> :e ++enc=koi8-u ++ff=unix<CR>
-   " map <S-F10> :emenu Encoding.<TAB>
-
-   set wildmenu
-   set wcm=<Tab>
-   menu Exec.GForth  :!gforth % <CR>
-   menu Exec.Perl    :!perl % <CR>
-   menu Exec.Python  :!python % <CR>
-   menu Exec.Ruby    :!ruby % <CR>
-   menu Exec.bash      :!/bin/bash<CR>
-   menu Exec.xterm     :sh<CR>
-"  map <S-F9> :emenu Exec.<Tab>
-
-   set wildmenu
-   set wcm=<Tab>
-   menu SetSpell.ru  :set spl=ru spell<CR>
-   menu SetSpell.en  :set spl=en spell<CR>
-   menu SetSpell.ua  :set spl=ua spell<CR>
-   menu SetSpell.ru_en  :set spl=ru,en spell<CR>
-   menu SetSpell.off :set nospell<CR>
-   menu SetSpell.next ]s
-   menu SetSpell.prev [s
-   menu SetSpell.word_good zg
-   menu SetSpell.word_wrong zw
-   menu SetSpell.word_ignore zG
-"  map <S-F7> :emenu SetSpell.<Tab>
-   imap <S-F8> <Esc> z=<CR>i
-   map <S-F8> z=<CR>
-
-   set wildmenu
-   set wcm=<Tab>
-   menu Paste.Paste :set paste<CR>
-   menu Paste.NoPaste :set nopaste<CR>
-"  map <S-F6> :emenu Paste.<Tab>
-
-endif
-
-
-if has('gui_running')
-
-   " Включаем подсветку при поиске.
-   set hlsearch
-
-   " Инкриментный поиск, при поиске сразу выделяем найденое не ждём нажатия Enter для поиска
-   set incsearch
-
-   " Убираем подсветку после поиска по нажатию на ESC
-   nnoremap <esc> :noh<return><esc>
-
-endif
-
-" Folding Stuffs
-set foldenable          " enable folding
-set foldmethod=syntax   " Define blocks based on the syntax file
-set foldcolumn=3        " Show Folding.
-set foldlevel=1         " The first level of nesting is open, the other closed
-
-" Code folding options
-nmap <leader>f0 :set foldlevel=0<CR>
-nmap <leader>f1 :set foldlevel=1<CR>
-nmap <leader>f2 :set foldlevel=2<CR>
-nmap <leader>f3 :set foldlevel=3<CR>
-nmap <leader>f4 :set foldlevel=4<CR>
-nmap <leader>f5 :set foldlevel=5<CR>
-nmap <leader>f6 :set foldlevel=6<CR>
-nmap <leader>f7 :set foldlevel=7<CR>
-nmap <leader>f8 :set foldlevel=8<CR>
-nmap <leader>f9 :set foldlevel=9<CR>
-
-
-let perl_fold=1
-let perl_fold_blocks=1
-
-let python_highlight_all = 1
-
-
-set foldopen=all        " automatic opening when approaching
+set completeopt=menuone,menu,longest,preview
 
 
 " "HOT KEY"
 " Moving windows
-nnoremap <C-Left> <C-W>h
-nnoremap <C-Right> <C-W>l
-nnoremap <C-Up> <C-W>k
-nnoremap <C-Down> <C-W>j
+nnoremap <A-Left> <C-W>h
+nnoremap <A-Right> <C-W>l
+nnoremap <A-Up> <C-W>k
+nnoremap <A-Down> <C-W>j
 
 " Resizing windows
 nnoremap <S-Down> <C-W>+
 nnoremap <S-Up> <C-W>-
-nnoremap <S-Left> <C-W>>
-nnoremap <S-Right> <C-W><
+nnoremap <S-Left> <C-W><
+nnoremap <S-Right> <C-W>>
 
-nnoremap <A-left> :tabp<CR>
-nnoremap <A-Right> :tabn<CR>
+nnoremap <C-left> :tabp<CR>
+nnoremap <C-Right> :tabn<CR>
 
 
-nnoremap <win-Up> <C-W>s
+nnoremap <Win-Up> <C-W>s
 ""nnoremap <M-Right> <C-W>v
 ""nnoremap <C-Space> <C-W>c
-
-
-" for perl file set compiler perl
-autocmd! BufEnter,BufNewFile,BufRead *.pl compiler perl
-
-" "Pathogen"
-" Install
-"https://github.com/tpope/vim-pathogen
-
-call pathogen#infect()
-
-
-" "ZenCoding" dependencies: pathogen
-"https://github.com/mattn/zencoding-vim
-let g:user_zen_expandabbr_key = '<C-Space>'
-let g:use_zen_complete_tag = 1
-
-" "Session"
-"https://github.com/xolox/vim-session
-" Save all the parameters in the session editor.
-set sessionoptions=blank,buffers,curdir,folds,globals,help,localoptions,options,resize,tabpages,winsize,winpos
-" taglist plugins
-
-" "NERDtree"
-"https://github.com/scrooloose/nerdtree
-let g:NERDTreeWinPos = "right"
-let g:NERDTreeTabsToggle = 1
-let g:NERDTreeIgnore=['\.pyc', '\~$', '\.swo$', '\.swp$', '\.git', '\.hg', '\.svn', '\.bzr']
-let g:nerdtree_tabs_open_on_gui_startup = 0
-let g:nerdtree_tabs_open_on_new_tab = 0
-let g:nerdtree_tabs_focus_on_files = 0
-
-
-"" Open NERDTree in <F-7> key
-nmap <silent> <F7> :NERDTreeToggle<CR>
-
-" "nerdtree-tabs"
-" https://github.com/jistr/vim-nerdtree-tabs
-
-" "Mojolicious Plugins"
-"https://github.com/vim-scripts/mojo.vim
-" Enable mojo higlight.
-let mojo_highlight_data = 1
-
-"  "neocomplcache"
-"  https://github.com/Shougo/neocomplcache
-"
-""let g:neocomplcache_min_syntax_length = 4
-""let g:neocomplcache_enable_at_startup = 1
-
-" "Tlist plugin"
-"https://github.com/vim-scripts/taglist.vim
-" dependencies: apt-get install exuberant-ctags
-let Tlist_Auto_Update = 0
-let Tlist_Auto_Open = 1
-let Tlist_Show_Menu = 1
-let Tlist_Use_Right_Window = 1
-
-let Tlist_Enable_Fold_Column = 0
-let Tlist_Exit_OnlyWindow = 1
-let Tlist_Use_SingleClick = 1
-let Tlist_Inc_Winwidth = 0
-
-nnoremap <silent> <F8> :TlistToggle<CR>
-
-" "dbext"
-"https://github.com/vim-scripts/dbext.vim
-
-" let g:dbext_default_profile_local = 'type=MYSQL:user=mysql:passwd=:dbname=mysql:extra=-t'
-"let g:dbext_default_profile_PG='type=PGSQL:user=postgres'
-
-
-
-" configure tags - add additional tags here or comment out not-used ones
-set tags+=~/.vim/tags/cpp
-set tags+=~/.vim/tags/gl
-set tags+=~/.vim/tags/sdl
-set tags+=~/.vim/tags/qt4
-" build tags of your own project with Ctrl-F12
-"map <C-F12> :!ctags -R --sort=yes --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
-map <F2> :!ctags -R --c++-kinds=+pl --fields=+iaS --extra=+q .<CR>
-
-" OmniCppComplete
-let OmniCpp_NamespaceSearch = 1
-let OmniCpp_GlobalScopeSearch = 1
-let OmniCpp_ShowAccess = 1
-let OmniCpp_ShowPrototypeInAbbr = 1     " show function parameters
-let OmniCpp_MayCompleteDot = 1          " autocomplete after .
-let OmniCpp_MayCompleteArrow = 1        " autocomplete after ->
-let OmniCpp_MayCompleteScope = 1        " autocomplete after ::
-let OmniCpp_DefaultNamespaces = ["std", "_GLIBCXX_STD"]
-" automatically open and close the popup menu / preview window
-
-au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
-set completeopt=menuone,menu,longest,preview
-
-"  "omny"
-        hi Pmenu guifg=#000000 guibg=#F8F8F8 ctermfg=black ctermbg=Lightgray
-        hi PmenuSbar guifg=#8A95A7 guibg=#F8F8F8 gui=NONE ctermfg=darkcyan ctermbg=lightgray cterm=NONE
-        hi PmenuThumb guifg=#F8F8F8 guibg=#8A95A7 gui=NONE ctermfg=lightgray ctermbg=darkcyan cterm=NONE
-
-" hz
-let colors_name = "ninja"
-
-" Specify highlighting
-highlight StatusLine   term=reverse ctermfg=LightGray ctermbg=Blue cterm=NONE
-highlight StatusLineNC term=reverse ctermfg=DarkCyan ctermbg=Blue cterm=NONE
-
-highlight CursorColumn term=underline cterm=underline ctermbg=NONE
-highlight CursorLine   term=underline cterm=underline ctermbg=NONE
-
-if &t_Co == 256
-  highlight StatusLine   ctermbg=18
-  highlight StatusLineNC ctermbg=18
-  highlight CursorColumn ctermbg=235 ctermfg=NONE cterm=NONE
-  highlight CursorLine   ctermbg=235 ctermfg=NONE cterm=NONE
-  "highlight CursorColumn ctermbg=233 ctermfg=NONE cterm=NONE
-  "highlight CursorLine   ctermbg=233 ctermfg=NONE cterm=NONE
-endif
-
-
-" end hz ))
-
-
-" Настройки русской раскладки.
 
 map ё `
 map й q
@@ -464,3 +275,156 @@ map , ?
 
 cmap цй wq
 cmap ц  w
+
+if has("gui_running")
+   set wildmenu
+   set wcm=<Tab>
+   menu Encoding.koi8-r :set enc=koi8-r<CR> :e ++enc=koi8-r ++ff=unix<CR>
+   menu Encoding.windows-1251 :set enc=cp1251<CR> :e ++enc=cp1251 ++ff=dos<CR>
+   menu Encoding.cp866 :set enc=8bit-cp866<CR> :e ++enc=cp866 ++ff=dos<CR>
+   menu Encoding.utf-8 :set enc=utf8<CR> :e ++enc=utf8 <CR>
+   menu Encoding.koi8-u :set enc=koi8-u<CR> :e ++enc=koi8-u ++ff=unix<CR>
+   " map <S-F10> :emenu Encoding.<TAB>
+
+   set wildmenu
+   set wcm=<Tab>
+   menu Set\ Spell.ru  :set spl=ru spell<CR>
+   menu Set\ Spell.en  :set spl=en spell<CR>
+   menu Set\ Spell.ua  :set spl=ua spell<CR>
+   menu Set\ Spell.ru_en  :set spl=ru,en spell<CR>
+   menu Set\ Spell.off :set nospell<CR>
+   menu Set\ Spell.next ]s
+   menu Set\ Spell.prev [s
+   menu Set\ Spell.word\ good zg
+   menu Set\ Spell.word\ wrong zw
+   menu Set\ Spell.word\ ignore zG
+   imap <S-F8> <Esc> z=<CR>i
+   map <S-F8> z=<CR>
+
+endif
+
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip,.git,*.tar.gz,~*,*.tar.bz2,*.rar,*.o,*.pyc,*.hg,*/cache/*
+set wildignore+=*.bz,*.iso,*.o,*.obj,*.bak,*.exe,*.gz,*.jpeg,*.png,*.jpg,*.flw,*.mp4,*.tar,*.mp3,*.pdf,*.djvu
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""" "PLUGINS" """"""""""""""""""""""""""""""""""""""""""""""""""""""
+" "pathogen"
+"
+execute pathogen#infect()
+
+" "NERDtree"
+"
+let g:NERDTreeWinPos = "right"
+let g:NERDTreeTabsToggle = 1
+let g:NERDTreeIgnore=['\.pyc', '\~$','\.chm*','\.exe*', '\.swo$', '\.swp$', '\.git', '\.hg', '\.svn', '\.bzr', '\.iso', '\.tar$','\.pdf','\.rar$','\.doc$','\.docx','\.xls$','\.xlsx', '\.djvu$', '\.tar\.gz', '\.tar\.bz2', '.tar.bz', '\.jpg$', '\.jpeg$', '\.o$','\.mp3$' ]
+let g:NERDTreeStatusline = "%{ getcwd() }"
+let g:NERDTreeWinSize = 20
+
+" open a NERDTree automatically when vim starts up if no files were specified
+" autocmd vimenter * if !argc() | NERDTree | endif
+
+" close vim if the only window left open
+" autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+
+"" Open NERDTree in <F-7> key
+nmap <silent> <F7> :NERDTreeToggle<CR>
+if has('gui_running')
+" "vim-nerdtree-tabs" "
+  let g:nerdtree_tabs_open_on_gui_startup = 1
+endif
+"  "sparkup""
+"  Mapping used to execute sparkup.
+let g:sparkupExecuteMapping='<C-Space>'
+
+" "SnipMate" snipets
+
+"omni complate (default instal)"
+set omnifunc=syntaxcomplete#Complete
+
+" remap Ctrl-x Ctrl-o to Shift-Space
+inoremap <S-Space> <C-x><C-o>
+inoremap <S-@> <S-Space>
+
+" "tagbar" more info on https://github.com/majutsushi/tagbar/wiki
+" requred "excuberant-ctags"
+let g:tagbar_width=20
+if has('gui_running')
+  autocmd VimEnter * nested :TagbarOpen
+endif
+nmap <F8> :TagbarToggle<CR>
+
+if &filetype == "ruby"
+let g:tagbar_type_ruby = {
+    \ 'kinds' : [
+        \ 'm:modules',
+        \ 'c:classes',
+        \ 'd:describes',
+        \ 'C:contexts',
+        \ 'f:methods',
+        \ 'F:singleton methods'
+    \ ]
+\ }
+endif
+
+if &filetype == "css"
+  let g:tagbar_type_css = {
+  \ 'ctagstype' : 'Css',
+      \ 'kinds'     : [
+          \ 'c:classes',
+          \ 's:selectors',
+          \ 'i:identities'
+      \ ]
+  \ }
+endif
+
+" "Ctrlp.vim" https://github.com/kien/ctrlp.vim
+
+let g:ctrlp_working_path_mode = 'ra'
+
+"" "gitgutter" https://github.com/airblade/vim-gitgutter
+
+
+
+
+"""""""""""""""""""" "Colorize status line """""""""""""""""""""""""""""""""""
+
+
+
+" Show the status bar is always
+set laststatus=2
+if has('gui_running')
+
+  set statusline=
+  set statusline+=%7*\[%n]                                       "buffernr
+  set statusline+=%1*\[%<%t]\                                          "File+path
+  set statusline+=%2*\ %y\                                            "FileType
+  set statusline+=%3*\ en:%{&enc}\ ff:%{&ff}\ file:%{&fenc}           "Encoding
+  set statusline+=%3*\ %{(&bomb?\",BOM\":\"\")}\                      "Encoding2
+  set statusline+=%4*\ %{fugitive#statusline()}\                       "Git
+  set statusline+=%5*\ %=(ch:%3b\ hex:%2B)\                         "Char in
+  set statusline+=%8*\ %=row:%l/%L\ (%03p%%)\                       "Rownumber/total (%)
+  set statusline+=%9*\ col:%03c\                                      "Column
+  set statusline+=%0*\ \ %m%r%w\ %P\ \                                "Modified? Readonly? Top/bot.
+
+
+  function! HighlightSearch()
+    if &hls
+      return 'H'
+    else
+      return ''
+    endif
+  endfunction
+
+  " Colors (adapted from ligh2011.vim):
+  hi User1 guifg=#ffdad8  guibg=#880c0e
+  hi User2 guifg=#000000  guibg=#F4905C
+  hi User3 guifg=#292b00  guibg=#f4f597
+  hi User4 guifg=#112605  guibg=#aefe7B
+  hi User5 guifg=#051d00  guibg=#7dcc7d
+  hi User7 guifg=#ffffff  guibg=#880c0e gui=bold
+  hi User8 guifg=#ffffff  guibg=#5b7fbb
+  hi User9 guifg=#ffffff  guibg=#810085
+  hi User0 guifg=#ffffff  guibg=#094afe
+
+else
+  set statusline=%t%m%r%h%w\ %y\ \ enc:%{&enc}\ format:%{&ff}\ file:%{&fenc}\ %{fugitive#statusline()}%=\ (\ ch:%3b\ hex:%2B\ )\ col:%2c\ line:%2l/%L\ [%2p%%]
+endif
