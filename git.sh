@@ -67,3 +67,23 @@ git clone git://github.com/vim-scripts/OmniCppComplete.git
 git clone git://github.com/yko/mojo.vim.git
 git clone git://github.com/benizi/perl-support.vim.git
 git clone git://github.com/HenningM/cvim-pathogen.git
+
+#####################################################
+# the new
+git clone https://github.com/kien/ctrlp.vim.git
+git clone git://github.com/tpope/vim-endwise.git
+git clone https://github.com/majutsushi/tagbar.git
+git clone https://github.com/tpope/vim-fugitive.git
+git clone git://github.com/tpope/vim-rake.git
+git clone https://github.com/tpope/vim-bundler.git
+git clone https://github.com/airblade/vim-gitgutter.git
+git clone https://github.com/vim-ruby/vim-ruby.git
+git clone https://github.com/tpope/vim-cucumber.git
+git clone https://github.com/tpope/vim-haml.git
+
+cd /tmp/
+git clone https://github.com/vim-scripts/ShowMarks.git
+mkdir ~/.vim/bundle/ShowMarks
+cp ShowMarks/plugin/showmarks.vim ~/.vim/bundle/ShowMarks/
+cd ~/.vim/bundle/
+
