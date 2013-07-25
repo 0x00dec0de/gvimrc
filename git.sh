@@ -80,6 +80,7 @@ git clone https://github.com/airblade/vim-gitgutter.git
 git clone https://github.com/vim-ruby/vim-ruby.git
 git clone https://github.com/tpope/vim-cucumber.git
 git clone https://github.com/tpope/vim-haml.git
+git clone git://github.com/jiangmiao/auto-pairs.git
 
 cd /tmp/
 git clone https://github.com/vim-scripts/ShowMarks.git
